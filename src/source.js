@@ -22,7 +22,6 @@ function Map( data, width, height )
 			this.grid[y][x] = new Tile(data.substr(y*width + x, 1));
 		}
 	}
-
 	
 	this.width = width;
 	this.height = height;
@@ -32,16 +31,54 @@ Map.prototype = {
 	getTile:function( x, y){
 		return this.grid[y][x];
 	}
-
-	
 }
+
 function Tile(data){
 	this.data = data;
 }
 
 Tile.prototype = {
-	is_wall:function(){
-		return this.data == "|"
-	}
+	isWall:function(){
+		return this.data == "#"
+	},
+
+	isSpawn:function(){
+		return this.data == "x"
+	},
 } 
+
+function Scene(){
+}
+Scene.prototype = {
+	setMap:function(map){
+		this.map = map;
+
+		var findSpawnPoints = function(map){
+			var spawnPoints = [];		
+			for( var y = 0; y < map.height; y++ )
+			{
+				for( var x = 0; x < map.width; x++ )
+				{
+					var tile = map.getTile(x, y);
+					if( tile.isSpawn() )
+						spawnPoints.push( { 'x':x, 'y': y } );
+				}
+			}
+			return spawnPoints; 
+		}
+
+		this.spawnPoints = findSpawnPoints(map);
+	},
+	spawn:function(man){
+	    man.position = this.spawnPoints.shift();
+	},
+};
+
+
+function Man(){
+}
+Man.prototype = {
+	position:null
+};
+
 
